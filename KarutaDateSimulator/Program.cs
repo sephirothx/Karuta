@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace KarutaDateSimulator
 {
@@ -57,7 +58,10 @@ namespace KarutaDateSimulator
         private static readonly Dictionary<string, State> _dict = new()
         {
             { "start", new State(100, 50, 50, 75, 100) },
-            { "move", new State(-10) },
+            { "UP", new State(-10) },
+            { "DOWN", new State(-10) },
+            { "LEFT", new State(-10) },
+            { "RIGHT", new State(-10) },
             { "action", new State(0,  -4, -6, -8, -4) },
             { "taco", new State(food: 60) },
             { "pasta", new State(food: 60) },
@@ -70,7 +74,8 @@ namespace KarutaDateSimulator
             { "juice", new State(drink: 60) },
             { "dance", new State(fun: 100, food: -10, drink: -15) },
             { "sandwich", new State(food: 40, drink: 20) },
-            { "jewelry", new State() }
+            { "jewelry", new State() },
+            { "noop", new State(0, 4, 6, 8, 4) }
         };
 
         private static void Main()
@@ -95,7 +100,7 @@ W: JUICE = 60 drink
 E: DANCE = 100 fun, -10 food, -15 drink
 R: SANDWICH = 40 food, 20 drink
 V: RING / SHOPPING
-Any other key: MOVEMENT = -10 fuel
+Arrow keys: MOVEMENT = -10 fuel
 
 Every action consumes 4 food, 6 drink, 8 fun and 4 time");
 
@@ -103,19 +108,25 @@ Every action consumes 4 food, 6 drink, 8 fun and 4 time");
             {
                 string action = Console.ReadKey(true).Key switch
                 {
-                    ConsoleKey.A => "taco",    
-                    ConsoleKey.S => "pasta",   
+                    ConsoleKey.A => "taco",
+                    ConsoleKey.S => "pasta",
                     ConsoleKey.D => "cocktail",
-                    ConsoleKey.F => "flower",  
-                    ConsoleKey.Z => "theater", 
-                    ConsoleKey.X => "gas",     
+                    ConsoleKey.F => "flower",
+                    ConsoleKey.Z => "theater",
+                    ConsoleKey.X => "gas",
                     ConsoleKey.C => "lunapark",
-                    ConsoleKey.Q => "coffee", 
-                    ConsoleKey.W => "juice",   
-                    ConsoleKey.E => "dance",   
+                    ConsoleKey.Q => "coffee",
+                    ConsoleKey.W => "juice",
+                    ConsoleKey.E => "dance",
                     ConsoleKey.R => "sandwich",
                     ConsoleKey.V => "jewelry",
-                    _            => "move"
+
+                    ConsoleKey.UpArrow    => "UP",
+                    ConsoleKey.DownArrow  => "DOWN",
+                    ConsoleKey.LeftArrow  => "LEFT",
+                    ConsoleKey.RightArrow => "RIGHT",
+
+                    _ => "noop"
                 };
 
                 state += _dict[action] + _dict["action"];
@@ -126,7 +137,7 @@ Every action consumes 4 food, 6 drink, 8 fun and 4 time");
 
                 Console.SetCursorPosition(0, 22);
                 Console.WriteLine("History:");
-                Console.WriteLine(string.Join(", ", actions));
+                Console.WriteLine(string.Join(", ", actions.Where(a => a != "noop")));
 
                 if (state.Food  <= 0 ||
                     state.Drink <= 0 ||
