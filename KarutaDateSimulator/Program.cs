@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace KarutaDateSimulator
 {
@@ -28,19 +27,19 @@ namespace KarutaDateSimulator
                 Fuel  = Math.Min(100, a.Fuel  + b.Fuel),
                 Food  = Math.Min(100, a.Food  + b.Food),
                 Drink = Math.Min(100, a.Drink + b.Drink),
-                Fun   = Math.Min(100, a.Fun + b.Fun),
-                Time  = Math.Min(100, a.Time + b.Time)
+                Fun   = Math.Min(100, a.Fun   + b.Fun),
+                Time  = Math.Min(100, a.Time  + b.Time)
             };
         }
 
         public override string ToString()
         {
             string ret    = "";
-            ret += $"Fuel  = {Fuel,4 }  {GetProgressBar(Fuel) ,-50}{Environment.NewLine}";
-            ret += $"Food  = {Food,4 }  {GetProgressBar(Food) ,-50}{Environment.NewLine}";
+            ret += $"Fuel  = {Fuel,4 }  {GetProgressBar(Fuel),-50 }{Environment.NewLine}";
+            ret += $"Food  = {Food,4 }  {GetProgressBar(Food),-50 }{Environment.NewLine}";
             ret += $"Drink = {Drink,4}  {GetProgressBar(Drink),-50}{Environment.NewLine}";
-            ret += $"Fun   = {Fun,4  }  {GetProgressBar(Fun)  ,-50}{Environment.NewLine}";
-            ret += $"Time  = {Time,4 }  {GetProgressBar(Time) ,-50}{Environment.NewLine}";
+            ret += $"Fun   = {Fun,4  }  {GetProgressBar(Fun),-50  }{Environment.NewLine}";
+            ret += $"Time  = {Time,4 }  {GetProgressBar(Time),-50 }{Environment.NewLine}";
 
             return ret;
         }
@@ -75,6 +74,7 @@ namespace KarutaDateSimulator
             { "dance", new State(fun: 100, food: -10, drink: -15) },
             { "sandwich", new State(food: 40, drink: 20) },
             { "jewelry", new State() },
+            { "airplane", new State(fun: -10) },
             { "noop", new State(0, 4, 6, 8, 4) }
         };
 
@@ -100,6 +100,7 @@ W: JUICE = 60 drink
 E: DANCE = 100 fun, -10 food, -15 drink
 R: SANDWICH = 40 food, 20 drink
 V: RING / SHOPPING
+T: AIRPLANE = -10 fun, rerolls the board
 Arrow keys: MOVEMENT = -10 fuel
 
 Every action consumes 4 food, 6 drink, 8 fun and 4 time");
@@ -120,6 +121,7 @@ Every action consumes 4 food, 6 drink, 8 fun and 4 time");
                     ConsoleKey.E => "dance",
                     ConsoleKey.R => "sandwich",
                     ConsoleKey.V => "jewelry",
+                    ConsoleKey.T => "airplane",
 
                     ConsoleKey.UpArrow    => "UP",
                     ConsoleKey.DownArrow  => "DOWN",
@@ -130,14 +132,14 @@ Every action consumes 4 food, 6 drink, 8 fun and 4 time");
                 };
 
                 state += _dict[action] + _dict["action"];
-                actions.Add(action);
+                if (action != "noop") actions.Add(action);
 
                 Console.SetCursorPosition(0, 0);
                 Console.WriteLine(state.ToString());
 
-                Console.SetCursorPosition(0, 22);
+                Console.SetCursorPosition(0, 23);
                 Console.WriteLine("History:");
-                Console.WriteLine(string.Join(", ", actions.Where(a => a != "noop")));
+                Console.WriteLine(string.Join(", ", actions));
 
                 if (state.Food  <= 0 ||
                     state.Drink <= 0 ||
@@ -149,7 +151,7 @@ Every action consumes 4 food, 6 drink, 8 fun and 4 time");
                 }
             }
 
-            Console.SetCursorPosition(0, 26);
+            Console.SetCursorPosition(0, 27);
             Console.WriteLine(state.Time == 0 ? "YOU WON!" : "YOU LOST.");
             Console.WriteLine("Press X to exit or any other key to restart");
 
