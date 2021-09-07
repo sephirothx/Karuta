@@ -44,6 +44,11 @@ namespace KarutaDateSimulator
             return ret;
         }
 
+        public int CalculateAP()
+        {
+            return (int)Math.Round((Food + Drink + Fun) / 6.0, MidpointRounding.AwayFromZero);
+        }
+
         private static string GetProgressBar(int x)
         {
             if (x < 0) x = 0;
@@ -84,6 +89,7 @@ namespace KarutaDateSimulator
 
 Start:
             var state   = _dict["start"];
+
             var actions = new List<string>();
 
             Console.Clear();
@@ -152,7 +158,7 @@ Every action consumes 4 food, 6 drink, 8 fun and 4 time");
             }
 
             Console.SetCursorPosition(0, 27);
-            Console.WriteLine(state.Time == 0 ? "YOU WON!" : "YOU LOST.");
+            Console.WriteLine(state.Time == 0 ? $"YOU WON! Total AP: {state.CalculateAP()}" : "YOU LOST.");
             Console.WriteLine("Press X to exit or any other key to restart");
 
             if (Console.ReadKey(true).Key != ConsoleKey.X) goto Start;
